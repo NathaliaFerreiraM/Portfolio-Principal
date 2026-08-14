@@ -131,6 +131,16 @@
     .grid-art{grid-template-columns:1fr}
     .grid-vid{grid-template-columns:1fr 1fr}
   }
+  .vid-lb{position:fixed;inset:0;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;z-index:900;opacity:0;pointer-events:none;transition:opacity .3s}
+  .vid-lb.open{opacity:1;pointer-events:all}
+  .vid-lb-wrap{position:relative;width:min(340px,88vw);aspect-ratio:9/16}
+  .vid-lb-wrap iframe{width:100%;height:100%;border:0;border-radius:4px}
+  .vid-lb-close{position:absolute;top:-38px;right:0;color:rgba(255,255,255,.7);font-family:var(--sans);font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;cursor:pointer;transition:color .2s}
+  .vid-lb-close:hover{color:#fff}
+  .play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);transition:background .3s}
+  .tile:hover .play-overlay{background:rgba(0,0,0,.1)}
+  .play-icon{width:52px;height:52px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,.45)}
+  .play-icon svg{display:block;margin-left:4px}
 </style>
 </head>
 <body>
@@ -218,8 +228,12 @@
       <h2>Vídeos <i>&amp; Motion</i><span class="en">Motion</span></h2>
     </div>
     <div class="grid-vid reveal">
-      <!-- MIRANDA: para video local use <video controls poster="..."><source src="assets/videos/NOME.mp4"></video>; para YouTube/Vimeo, um iframe responsivo. -->
-      <div class="tile"><div class="ratio"><div class="ph"><div class="num">01</div><div class="lbl">Espaço reservado / Coming soon</div></div></div></div>
+      <!-- MIRANDA: para adicionar video do YouTube, copie o tile abaixo e troque o data-vid pelo ID do video -->
+      <div class="tile vid-tile" data-vid="99C-vJM3ghk">
+        <div class="ratio" style="background:url('https://i.ytimg.com/vi/99C-vJM3ghk/hqdefault.jpg') center/cover no-repeat">
+          <div class="play-overlay"><div class="play-icon"><svg width="16" height="19" viewBox="0 0 16 19" fill="none"><path d="M1 1.5L15 9.5L1 17.5V1.5Z" fill="white"/></svg></div></div>
+        </div>
+      </div>
       <div class="tile"><div class="ratio"><div class="ph"><div class="num">02</div><div class="lbl">Espaço reservado / Coming soon</div></div></div></div>
       <div class="tile"><div class="ratio"><div class="ph"><div class="num">03</div><div class="lbl">Espaço reservado / Coming soon</div></div></div></div>
     </div>
@@ -315,8 +329,16 @@
   <div class="wrap"><b>Nathalia Ferreira</b> &nbsp; Rio de Janeiro &nbsp; <span id="ano"></span></div>
 </footer>
 
-<!-- LIGHTBOX -->
+<!-- LIGHTBOX IMAGENS -->
 <div class="lb" id="lb"><span class="close" id="lbClose">Fechar / Close</span><img src="" alt="" id="lbImg"></div>
+
+<!-- LIGHTBOX VÍDEOS -->
+<div class="vid-lb" id="vidLb">
+  <div class="vid-lb-wrap">
+    <span class="vid-lb-close" id="vidLbClose">Fechar / Close</span>
+    <iframe id="vidLbFrame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  </div>
+</div>
 
 <script>
   document.getElementById('ano').textContent=new Date().getFullYear();
@@ -334,6 +356,19 @@
   document.getElementById('lbClose').addEventListener('click',closeLb);
   lb.addEventListener('click',e=>{if(e.target===lb)closeLb()});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLb()});
+
+  // lightbox vídeos
+  const vidLb=document.getElementById('vidLb'),vidFrame=document.getElementById('vidLbFrame');
+  document.querySelectorAll('.vid-tile').forEach(t=>{
+    t.addEventListener('click',()=>{
+      vidFrame.src='https://www.youtube.com/embed/'+t.dataset.vid+'?autoplay=1&rel=0&modestbranding=1';
+      vidLb.classList.add('open');
+    });
+  });
+  function closeVidLb(){vidLb.classList.remove('open');vidFrame.src='';}
+  document.getElementById('vidLbClose').addEventListener('click',closeVidLb);
+  vidLb.addEventListener('click',e=>{if(e.target===vidLb)closeVidLb()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeVidLb()});
 </script>
 </body>
 </html>
